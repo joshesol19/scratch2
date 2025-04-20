@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sports Wordle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(5, 50px);
+      gap: 5px;
+      margin-bottom: 20px;
+    }
+    .tile {
+      width: 50px;
+      height: 50px;
+      background: white;
+      border: 2px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      text-transform: uppercase;
+    }
+    .correct {
+      background-color: #6aaa64;
+      color: white;
+    }
+    .present {
+      background-color: #c9b458;
+      color: white;
+    }
+    .absent {
+      background-color: #787c7e;
+      color: white;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 120px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #message {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sports Wordle</h1>
+  <div id="board"></div>
+  <input type="text" id="guessInput" maxlength="5" placeholder="5-letter word">
+  <button onclick="submitGuess()">Guess</button>
+  <p id="message"></p>
+  <p>Wins: <span id="wins">0</span> | Losses: <span id="losses">0</span></p>
+
+  <script>
+    const sportsWords = [
+      "coach", "score", "pitch", "tiger", "racer", "serve", "match", "arena", "block", "draft",
+      "cross", "shoot", "slide", "cleat", "boots", "drill", "press", "flick", "curve", "glove",
+      "track", "field", "spike", "court", "grind", "medal", "swish", "guard", "swing", "catch",
+      "bench", "chase", "skate", "jumps", "kicks", "drive", "relay", "final", "rally", "squad",
+      "brave", "climb", "dunks", "feint", "grasp", "punch", "rings", "refed", "whiff", "taked",
+      "serve", "coach", "power", "stunt", "pacer", "combo", "torso", "squad", "brace", "split",
+      "parry", "throw", "tally", "fence", "snipe", "tiger", "title", "event", "wrest", "deuce",
+      "curve", "eagle", "debut", "enter", "foulz", "baton", "volts", "press", "scrum", "touch",
+      "flair", "blitz", "saves", "goals", "hacks", "short", "lines", "sides", "skill", "serve",
+      "chess", "rugby", "punch", "vault", "reins", "groom", "horse", "joust", "races", "tacks",
+      "float", "freer", "dodge", "scoot", "jumps", "vault", "kendo", "karat", "flick", "smash",
+      "drags", "spins", "grips", "glide", "crank", "grips", "shots", "sails", "flare", "picks",
+      "tight", "swims", "sinks", "cycle", "pedal", "bikes", "frets", "clubs", "teams", "balls",
+      "stick", "blade", "catch", "check", "dekes", "pivot", "paint", "spurs", "stars", "giant",
+      "blows", "coach", "winch", "slogs", "ropes", "scoop", "clips", "meter", "pacer", "field"
+    ];
+
+    let targetWord = "";
+    let currentRow = 0;
+    let wins = 0;
+    let losses = 0;
+
+    function startGame() {
+      document.getElementById("board").innerHTML = "";
+      targetWord = sportsWords[Math.floor(Math.random() * sportsWords.length)].toLowerCase();
+      currentRow = 0;
+      document.getElementById("message").textContent = "";
+
+      for (let i = 0; i < 6 * 5; i++) {
+        const tile = document.createElement("div");
+        tile.classList.add("tile");
+        tile.id = `tile-${i}`;
+        document.getElementById("board").appendChild(tile);
+      }
+    }
+
+    function submitGuess() {
+      const input = document.getElementById("guessInput");
+      const guess = input.value.toLowerCase();
+      if (guess.length !== 5) {
+        alert("Enter a 5-letter word.");
+        return;
+      }
+
+      if (!sportsWords.includes(guess)) {
+        alert("Invalid sports word.");
+        return;
+      }
+
+      for (let i = 0; i < 5; i++) {
+        const tile = document.getElementById(`tile-${currentRow * 5 + i}`);
+        tile.textContent = guess[i].toUpperCase();
+        if (guess[i] === targetWord[i]) {
+          tile.classList.add("correct");
+        } else if (targetWord.includes(guess[i])) {
+          tile.classList.add("present");
+        } else {
+          tile.classList.add("absent");
+        }
+      }
+
+      if (guess === targetWord) {
+        document.getElementById("message").textContent = "You win!";
+        wins++;
+        document.getElementById("wins").textContent = wins;
+        setTimeout(startGame, 2000);
+        return;
+      }
+
+      currentRow++;
+      if (currentRow === 6) {
+        document.getElementById("message").textContent = `You lose! Word was: ${targetWord}`;
+        losses++;
+        document.getElementById("losses").textContent = losses;
+        setTimeout(startGame, 2000);
+      }
+      input.value = "";
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
